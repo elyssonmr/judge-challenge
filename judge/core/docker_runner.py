@@ -3,19 +3,29 @@ import subprocess
 import os
 
 from random import randint
+from uuid import uuid4
 
 class DockerThread(Thread):
 
     def __init__(self, future, execution_config):
+        seed = uuid4()
         super().__init__(
-            name=f'elysson_test{name}'
+            name=f'judge_{seed}'
         )
-        container_img = 'emr.test'
+
         mapping = f'-v {os.path.abspath(".")}:/app/tests'
-        self.container_name = f'--name teste_{name}'
-        timeout = f'-e TIMEOUT={randint(10, 20)}s'
-        self.cmd = f'docker run --rm {mapping} {self.container_name} {timeout} {container_img}'
+        self.container_name = f'--name judge_{seed}'
+        envs = self._build_envs(execution_config.environment_configs)
+        self.cmd = f'docker run {mapping} {self.container_name} {envs} {execution_config.image_name}'.strip()
         self.future = future
+
+
+    def _build_envs(self, config_envs):
+        envs = ''
+        for config_env in config_envs:
+            envs += f'-e {config_env.name}={config_env.value}'
+
+        return envs
 
 
     def run(self):
@@ -46,9 +56,9 @@ class DockerThread(Thread):
                 response['message'] = 'one or more test did not pass'
 
         print(f'{self.container_name} finished')
-        #print(f'{self.container_name}   output: \n\n')
-        #print(process.stdout)
-        #print('\n\n')
-        #print(process.stderr)
+        print(f'{self.container_name}   output: \n\n')
+        print(process.stdout)
+        print('\n\n')
+        print(process.stderr)
         loop = self.future.get_loop()
         loop.call_soon_threadsafe(self.future.set_result, response)

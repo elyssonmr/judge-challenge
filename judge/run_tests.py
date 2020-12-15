@@ -1,14 +1,22 @@
 import asyncio
 
-from judge.core.models import ExecutionConfig, EnvConfig
-from judge.core.docker_runner import DockerThread
-
+from core.docker_runner import DockerThread
+from core.models import ExecutionConfig, EnvConfig
 
 def run_test(config):
     future = asyncio.Future()
     thread = DockerThread(future, config)
     thread.start()
     return future
+
+
+async def run_multiples_docker(loop):
+    futures = []
+
+    for name in ['a', 'b', 'c', 'd', 'e']:
+        futures.append(run_test(name))
+    
+    return await asyncio.gather(*futures)
 
 
 if __name__ == "__main__":

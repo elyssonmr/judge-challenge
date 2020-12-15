@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from dataclasses import field
 
+import typing
+
 
 
 @dataclass
@@ -12,4 +14,4 @@ class EnvConfig:
 @dataclass
 class ExecutionConfig():
     image_name: str
-    environment_configs: list[EnvConfig] = field(default_factory=list)
+    environment_configs: typing.List[EnvConfig] = field(default_factory=list)
