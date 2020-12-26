@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from dataclasses import field
 
+from io import TextIOWrapper
 import typing
 
 
@@ -15,3 +16,4 @@ class EnvConfig:
 class ExecutionConfig():
     image_name: str
     environment_configs: typing.List[EnvConfig] = field(default_factory=list)
+    files: typing.List[TextIOWrapper] = field(default_factory=list)

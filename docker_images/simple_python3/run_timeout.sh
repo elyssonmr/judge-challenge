@@ -1,1 +1,1 @@
-timeout -s 9 $TIMEOUT pytest tests
+timeout -s 9 $TIMEOUT pytest --rootdir=test test
